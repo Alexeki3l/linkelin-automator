@@ -1,13 +1,9 @@
+import { prueba } from "./scraper/prueba";
+
 // const menu = require("./menu/navbar.js");
-const {
-  app,
-  BrowserWindow,
-  ipcMain,
-  Menu,
-  MenuItem,
-  session,
-} = require("electron");
-const path = require("path");
+import { app, BrowserWindow, ipcMain, Menu, MenuItem, session } from "electron";
+import path from "path";
+import { test } from "./utils";
 
 let mainWindow: BrowserWindow;
 let campaignSubMenu;
@@ -18,16 +14,19 @@ const menuTemplate = Menu.buildFromTemplate([
   {
     label: " Opciones ",
     submenu: [
+      // {
+      //   label: "Home",
+      //   // accelerator: "CmdOrCtrl+H",
+      //   click: () => mainWindow.loadFile("index.html"),
+      //   // icon: path.join(__dirname, 'icon.png')
+      // },
       {
-        label: "Home",
-        // accelerator: "CmdOrCtrl+H",
-        click: () => mainWindow.loadFile("index.html"),
-        // icon: path.join(__dirname, 'icon.png')
-      },
-      {
-        label: "Prueba",
-        // click: () => mainWindow.loadURL("http://localhost:5173/"),
-        click: () => mainWindow.loadFile("./src/accounts.html"),
+        label: "Abrir Playwright",
+        click: async () => {
+          console.log("Menú seleccionado: Abrir Playwright");
+          // mainWindow.webContents.send("menu-click", 1);
+          await test();
+        },
       },
       {
         label: "Accounts Linkelin",
@@ -54,41 +53,45 @@ const menuTemplate = Menu.buildFromTemplate([
   },
   {
     label: " Dashboard ",
-    click: () => console.log("Ir a Dashboard"),
+    click: () => mainWindow.loadFile("./src/pages/dashboad/dashboard.html"),
   },
-  {
-    label: " Configuraciones ",
-    submenu: [
-      {
-        label: "Limites",
-        click: () => console.log("Configuraciones 'Limites'"),
-      },
-      {
-        label: "Horas de Trabajo",
-        click: () => console.log("Configuraciones 'Horas de Trabajo'"),
-      },
-      { label: "Otros", click: () => console.log("Configuraciones 'Otros'") },
-    ],
-  },
+  // {
+  //   label: " Configuraciones ",
+  //   submenu: [
+  //     {
+  //       label: "Limites",
+  //       click: () => console.log("Configuraciones 'Limites'"),
+  //     },
+  //     {
+  //       label: "Horas de Trabajo",
+  //       click: () => console.log("Configuraciones 'Horas de Trabajo'"),
+  //     },
+  //     { label: "Otros", click: () => console.log("Configuraciones 'Otros'") },
+  //   ],
+  // },
   {
     label: " Necesitas ayuda? ",
     submenu: [
       {
-        label: "LinkedIn weekly invitation ",
-        click: () => console.log("Configuraciones 'Necesitas ayuda'"),
+        label: "Ayuda",
+        click: () => mainWindow.loadFile("./src/pages/help/help.html"),
       },
-      {
-        label: "Knowledge base",
-        click: () => console.log("Configuraciones 'Necesitas ayuda'"),
-      },
-      {
-        label: "Video tutorials",
-        click: () => console.log("Configuraciones 'Necesitas ayuda'"),
-      },
-      {
-        label: "Ask for Support",
-        click: () => console.log("Configuraciones 'Necesitas ayuda'"),
-      },
+      // {
+      //   label: "LinkedIn weekly invitation ",
+      //   click: () => console.log("Configuraciones 'Necesitas ayuda'"),
+      // },
+      // {
+      //   label: "Knowledge base",
+      //   click: () => console.log("Configuraciones 'Necesitas ayuda'"),
+      // },
+      // {
+      //   label: "Video tutorials",
+      //   click: () => console.log("Configuraciones 'Necesitas ayuda'"),
+      // },
+      // {
+      //   label: "Ask for Support",
+      //   click: () => console.log("Configuraciones 'Necesitas ayuda'"),
+      // },
     ],
   },
 ]);
@@ -108,19 +111,32 @@ function createWindow() {
     },
   });
 
-  console.log(path.join(app.getAppPath(), "/src/preload.ts"));
+  // console.log(path.join(app.getAppPath(), "/src/preload.ts"));
 
   mainWindow.webContents.openDevTools();
 
-  // Captura el texto enviado desde el proceso de renderizado
-  ipcMain.on("get-text-from-page", (event, text) => {
-    console.log("Texto recibido:", text); // Aquí se procesa lo que el usuario escribió
-  });
+  // mainWindow.loadURL("https://www.linkedin.com");
 
   // Escuchar el evento 'did-navigate' para obtener la URL cada vez que cambie
-  mainWindow.webContents.on("did-navigate", (event, url) => {
-    console.log("Nueva URL:", url); // Mostrar la URL actual en la consola
-  });
+  // mainWindow.webContents.on("did-navigate", async (event, url) => {
+  //   console.log("Nueva URL:", url); // Mostrar la URL actual en la consola
+  //   try {
+  //     const cookies = await session.defaultSession.cookies.get({});
+  //     console.log("Cookies obtenidas:", cookies);
+  //   } catch (error) {
+  //     console.error("Error obteniendo cookies:", error);
+  //   }
+  // });
+
+  //solo funciona cuando se carga la aplicacion
+  // mainWindow.webContents.once("did-finish-load", async () => {
+  //   try {
+  //     const cookies = await session.defaultSession.cookies.get({});
+  //     console.log("Cookies obtenidas:", cookies);
+  //   } catch (error) {
+  //     console.error("Error obteniendo cookies:", error);
+  //   }
+  // });
 
   // Escuchar el evento 'did-navigate-in-page' para obtener la URL al hacer navegación interna
   mainWindow.webContents.on("did-navigate-in-page", (event, url) => {
@@ -141,30 +157,53 @@ function createWindow() {
   Menu.setApplicationMenu(menuTemplate);
 }
 
-ipcMain.on("openLinkedIn", (event, userId) => {
-  console.log(`Abriendo LinkedIn para el usuario: ${userId}`);
-  openLinkedInForUser(userId);
-});
+// ipcMain.on("openLinkedIn", (event, userId) => {
+//   console.log(`Abriendo LinkedIn para el usuario: ${userId}`);
+//   openLinkedInForUser(userId);
+// });
 
-function openLinkedInForUser(userId: string) {
-  const userSession = session.fromPartition(`persist:${userId}`);
+// function openLinkedInForUser(userId: string) {
+//   const userSession = session.fromPartition(`persist:${userId}`);
 
-  const win = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    webPreferences: {
-      session: userSession, // Asignar la sesión personalizada
-      preload: path.join(__dirname, "preload.ts"),
-    },
-  });
+//   const win = new BrowserWindow({
+//     width: 1200,
+//     height: 800,
+//     webPreferences: {
+//       session: userSession, // Asignar la sesión personalizada
+//       preload: path.join(__dirname, "preload.ts"),
+//     },
+//   });
 
-  win.loadURL("https://www.linkedin.com"); // Cargar LinkedIn
-}
+//   win.loadURL("https://www.linkedin.com"); // Cargar LinkedIn
+// }
 
 // Recuperar la sesión para un usuario
-function getUserSession(userId: string) {
-  return session.fromPartition(`persist:${userId}`);
-}
+// function getUserSession(userId: string) {
+//   return session.fromPartition(`persist:${userId}`);
+// }
+
+// import fs from "fs";
+// import { chromium } from "playwright";
+
+// const wer = async () => {
+//   const browser = await chromium.launch({ headless: false });
+//   const context = await browser.newContext();
+//   const page = await context.newPage();
+
+//   await page.goto("https://www.linkedin.com"); // Reemplaza con tu URL
+//   console.log("Inicia sesión manualmente en la página.");
+
+//   await page.waitForTimeout(10000);
+
+//   // Espera unos segundos para permitir el inicio de sesión manual
+//   // await page.waitForTimeout(10000);
+
+//   // const cookies = await context.cookies();
+//   // fs.writeFileSync("cookies.json", JSON.stringify(cookies, null, 2));
+
+//   // console.log("Cookies guardadas en cookies.json");
+//   await browser.close();
+// };
 
 // Función para añadir una nueva campaña al submenú
 function addCampaign() {
@@ -208,9 +247,10 @@ function addCampaign() {
   }
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   createWindow();
-  mainWindow.loadFile("./src/pages/page-landing.html");
+  // await wer();
+  mainWindow.loadFile("./src/pages/help/help.html");
 });
 
 // app.on("window-all-closed", () => {

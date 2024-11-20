@@ -6,3 +6,12 @@
 // contextBridge.exposeInMainWorld("electronAPI", {
 //   openLinkedIn: (userId: string) => ipcRenderer.send("openLinkedIn", userId),
 // });
+
+// import { contextBridge, ipcRenderer } from "electron";
+
+// contextBridge.exposeInMainWorld("electronAPI", {
+//   onMenuClick: (callback) => {
+//     console.log("funciona");
+//     ipcRenderer.on("menu-click", (_event, message) => callback(message));
+//   },
+// });

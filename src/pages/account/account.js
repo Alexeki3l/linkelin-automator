@@ -40,7 +40,7 @@ function renderUsers() {
   }
 }
 
-function selectUser(userId) {
+export function selectUser(userId) {
   window.electronAPI.openLinkedIn(userId);
 }
 
@@ -60,19 +60,20 @@ saveUserBtn.addEventListener("click", async () => {
 
   if (username && password) {
     // Agregar evento click al botón
+    // const token = await bcrypt.hash({ username, password }, 10);
 
     try {
       // Realizar la petición a un endpoint (cambia esta URL por la de tu API)
-      const response = await fetch("http://localhost:5050/api/v1/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
+      // const response = await fetch("http://localhost:5050/api/v1/users", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ username, password }),
+      // });
 
-      // Manejar la respuesta de la petición
-      if (!response.ok) {
+      let response; // Manejar la respuesta de la petición
+      if (!response) {
         throw new Error("Error");
       }
       users.push({ id: users.length + 1, name: username, email: password });
@@ -80,6 +81,7 @@ saveUserBtn.addEventListener("click", async () => {
       console.error("Error en la petición:", error);
     }
     // Cerrar el modal
+    // eslint-disable-next-line no-undef
     const modal = bootstrap.Modal.getInstance(
       document.getElementById("createUserModal")
     );
