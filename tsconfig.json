@@ -1,18 +1,18 @@
-{
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "commonjs",
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "noImplicitAny": true,
-    "sourceMap": true,
-    "baseUrl": ".",
-    "outDir": "dist",
-    "moduleResolution": "node",
-    "resolveJsonModule": true
-  }
-}
+// {
+//   "compilerOptions": {
+//     "target": "ESNext",
+//     "module": "commonjs",
+//     "allowJs": true,
+//     "skipLibCheck": true,
+//     "esModuleInterop": true,
+//     "noImplicitAny": true,
+//     "sourceMap": true,
+//     "baseUrl": ".",
+//     "outDir": "dist",
+//     "moduleResolution": "node",
+//     "resolveJsonModule": true
+//   }
+// }
 
 // {
 //   "compilerOptions": {
@@ -27,21 +27,21 @@
 //   }
 // }
 
-// {
-//   "compilerOptions": {
-//     "experimentalDecorators": true,
-//     "emitDecoratorMetadata": true,
-//     "target": "ES2021",
-//     "module": "commonjs",
-//     "strictPropertyInitialization": false,
-//     "esModuleInterop": true,
-//     "skipLibCheck": true,
-//     "allowJs": true,
-//     "noImplicitAny": true,
-//     "sourceMap": true,
-//     "baseUrl": ".",
-//     "outDir": "dist",
-//     "moduleResolution": "node",
-//     "resolveJsonModule": true
-//   }
-// }
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "target": "ES2021",
+    "module": "commonjs",
+    "strictPropertyInitialization": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "resolveJsonModule": true
+  }
+}

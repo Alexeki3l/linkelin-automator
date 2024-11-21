@@ -1,12 +1,26 @@
 import { prueba } from "./scraper/prueba";
 
 // const menu = require("./menu/navbar.js");
-import { app, BrowserWindow, ipcMain, Menu, MenuItem, session } from "electron";
+import {
+  app,
+  BrowserWindow,
+  Cookie,
+  ipcMain,
+  Menu,
+  MenuItem,
+  session,
+} from "electron";
 import path from "path";
-import { test } from "./utils";
+import {
+  playwrightTest,
+  takeCookiesOfElectronAndSendToPlaywright,
+  test,
+} from "./utils";
+import { CookiesInterface, CookiesInterfaceElectron } from "./interfaces";
 
 let mainWindow: BrowserWindow;
 let campaignSubMenu;
+const cookiesList: CookiesInterface[] = [];
 
 const NAME_APP = "Linkelin Automator";
 
@@ -115,45 +129,30 @@ function createWindow() {
 
   mainWindow.webContents.openDevTools();
 
-  // mainWindow.loadURL("https://www.linkedin.com");
-
-  // Escuchar el evento 'did-navigate' para obtener la URL cada vez que cambie
-  // mainWindow.webContents.on("did-navigate", async (event, url) => {
-  //   console.log("Nueva URL:", url); // Mostrar la URL actual en la consola
-  //   try {
-  //     const cookies = await session.defaultSession.cookies.get({});
-  //     console.log("Cookies obtenidas:", cookies);
-  //   } catch (error) {
-  //     console.error("Error obteniendo cookies:", error);
-  //   }
-  // });
-
-  //solo funciona cuando se carga la aplicacion
-  // mainWindow.webContents.once("did-finish-load", async () => {
-  //   try {
-  //     const cookies = await session.defaultSession.cookies.get({});
-  //     console.log("Cookies obtenidas:", cookies);
-  //   } catch (error) {
-  //     console.error("Error obteniendo cookies:", error);
-  //   }
-  // });
-
-  // Escuchar el evento 'did-navigate-in-page' para obtener la URL al hacer navegación interna
-  mainWindow.webContents.on("did-navigate-in-page", (event, url) => {
-    console.log("URL dentro de la misma página:", url); // Mostrar la URL interna
+  mainWindow.webContents.on("did-navigate", async (event, url) => {
+    console.log("Nueva URL pra las cookies:", url);
+    if (url.includes("//www.linkedin.com/feed/")) {
+      // Mostrar la URL actual en la consola
+      await takeCookiesOfElectronAndSendToPlaywright(url);
+    }
   });
 
-  // Opcional: Cuando la página cambia de título, asegúrate de mantener el nombre de tu app
+  // Escuchar el evento 'did-navigate-in-page' para obtener la URL al hacer navegación interna
+  mainWindow.webContents.on("did-navigate-in-page", async (event, url) => {
+    console.log("URL dentro de la misma página:", url); // Mostrar la URL interna
+    if (url.includes("//www.linkedin.com/")) {
+      // Mostrar la URL actual en la consola
+      await takeCookiesOfElectronAndSendToPlaywright(url);
+    }
+  });
+
+  // mantiene el título fijo
   mainWindow.webContents.on("page-title-updated", (event) => {
     event.preventDefault(); // Evita que el título sea modificado por la página
     mainWindow.setTitle(`${NAME_APP}`); // Fija el título a tu aplicación
   });
 
-  // Aplicar el CSS personalizado
-  // menuTemplate.setStyle({
-  //   css: fs.readFileSync(path.join(__dirname, "styles.css"), "utf8"),
-  // });
-  // Set the menu to the main window
+  // Cargar los menu en la aplicacion
   Menu.setApplicationMenu(menuTemplate);
 }
 
@@ -181,29 +180,6 @@ function createWindow() {
 // function getUserSession(userId: string) {
 //   return session.fromPartition(`persist:${userId}`);
 // }
-
-// import fs from "fs";
-// import { chromium } from "playwright";
-
-// const wer = async () => {
-//   const browser = await chromium.launch({ headless: false });
-//   const context = await browser.newContext();
-//   const page = await context.newPage();
-
-//   await page.goto("https://www.linkedin.com"); // Reemplaza con tu URL
-//   console.log("Inicia sesión manualmente en la página.");
-
-//   await page.waitForTimeout(10000);
-
-//   // Espera unos segundos para permitir el inicio de sesión manual
-//   // await page.waitForTimeout(10000);
-
-//   // const cookies = await context.cookies();
-//   // fs.writeFileSync("cookies.json", JSON.stringify(cookies, null, 2));
-
-//   // console.log("Cookies guardadas en cookies.json");
-//   await browser.close();
-// };
 
 // Función para añadir una nueva campaña al submenú
 function addCampaign() {
